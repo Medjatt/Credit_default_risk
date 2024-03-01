@@ -64,4 +64,4 @@ jobs:
         with:
           app-name: 'modelscore'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F03417A7B63F4857AB8C6F4D252169A4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0DDA7C45212E4DCBBBB8E75BD73791E5 }}
