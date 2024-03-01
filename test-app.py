@@ -8,7 +8,7 @@ app = FastAPI()
 model = joblib.load("model.joblib")
 
 # Load data from a Parquet file
-df = pd.read_parquet("application_train.parquet")
+df = pd.read_csv("application_train.csv")
 
 # Endpoint to make predictions with SK_ID_CURR as a path parameter in the URL
 @app.get("/predict/{sk_id}")
