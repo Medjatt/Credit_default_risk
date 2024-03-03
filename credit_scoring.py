@@ -19,9 +19,13 @@ def predict(sk_id: int = Path(..., title="SK_ID_CURR", description="The unique i
     
     # Retrieve data corresponding to SK_ID_CURR and make predictions
     data = fetch_data(sk_id)
+    probability = model.predict_proba(data)[:, 1]
     prediction = model.predict(data)
-    
-    return {"prediction": prediction.tolist()}
+
+    # Format the output
+    formatted_prediction = {"probability_of_failure": round(probability.item(), 2), "class": prediction.item()}
+
+    return formatted_prediction
 
 # Function to check if SK_ID_CURR exists in the database
 def check_sk_id_exists(sk_id):
