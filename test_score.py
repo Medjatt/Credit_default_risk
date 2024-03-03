@@ -8,7 +8,10 @@ client = TestClient(app)
 def test_predict_valid_sk_id():
     response = client.get("/predict/100002")
     assert response.status_code == 200
-    assert "prediction" in response.json()
+    data = response.json()
+    assert "class" in data
+    assert "probability_of_failure" in data
+    #assert "prediction" in response.json()
 
 def test_predict_invalid_sk_id():
     response = client.get("/predict/99999")
