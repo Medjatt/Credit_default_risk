@@ -1,35 +1,48 @@
 import streamlit as st
-import mlflow.pyfunc
-import pandas as pd
-
-# Load the MLFlow model
-logged_model = 'runs:/b1f4405487db4f1db185eeed7734b8fe/model_logistic_regression'
-loaded_model = mlflow.pyfunc.load_model(logged_model)
-
-# Load the application_train.csv file
-df = pd.read_csv('application_train.csv')
+import requests
+import matplotlib.pyplot as plt
 
 # User interface with Streamlit
 st.title('Scoring Model')
 
 # Input area for SK_ID_CURR of the client
 st.header('Input')
-sk_id_curr = st.number_input("Enter SK_ID_CURR:", min_value=0)  # Allowing only positive values
-
-# Search for data corresponding to SK_ID_CURR in the dataframe
-X_client = df[df['SK_ID_CURR'] == sk_id_curr]
+sk_id_curr = st.number_input("Enter client SK_ID_CURR:", min_value=0)  # Allowing only positive values
 
 # Prediction button
 if st.button("Predict"):
-    if X_client.empty:
-        st.write(f"No data found for SK_ID_CURR: {sk_id_curr}")
-    else:
-        # Make predictions on client data
-        y_pred_proba_client = loaded_model.predict(X_client)
-        
-        # Use the previously calculated optimal threshold for classification
-        threshold = 0.5152  # Use the previously calculated optimal threshold
-        y_pred_client = (y_pred_proba_client > threshold).astype(int)
+    # Endpoint of the deployed Azure API
+    endpoint = "https://modelscore.azurewebsites.net/predict/"
+
+    # Make a GET request to the Azure API with the SK_ID_CURR
+    response = requests.get(endpoint + str(sk_id_curr))
+
+    if response.status_code == 200:
+        # Extract prediction from the response
+        prediction_data = response.json()
         
         # Display the prediction for the client with SK_ID_CURR
-        st.write(f"Prediction for client SK_ID_CURR = {sk_id_curr}: {y_pred_client}")
+        st.write(f"Prediction for client SK_ID_CURR = {sk_id_curr}:")
+        st.write(f"Probability of failure: {prediction_data['probability_of_failure']:.4f}")
+        st.write(f"Class: {prediction_data['class']}")
+
+        # Plot pie chart representing probability of failure
+        prob_failure = prediction_data['probability_of_failure']
+        prob_success = 1 - prob_failure
+
+        # Data to plot
+        labels = ['Probability of failure', 'Probability of non-failure']
+        sizes = [prob_failure, prob_success]
+        colors = ['red', 'green']
+
+        # Plot
+        fig, ax = plt.subplots()
+        ax.pie(sizes, labels=labels, colors=colors, autopct='%1.2f%%')
+
+        # Equal aspect ratio ensures that pie is drawn as a circle.
+        ax.axis('equal')  
+
+        # Show the plot
+        st.pyplot(fig)
+    else:
+        st.write(f"Client ID = {sk_id_curr} not found in the database.")

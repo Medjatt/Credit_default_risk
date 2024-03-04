@@ -11,12 +11,11 @@ def test_predict_valid_sk_id():
     data = response.json()
     assert "class" in data
     assert "probability_of_failure" in data
-    #assert "prediction" in response.json()
 
 def test_predict_invalid_sk_id():
     response = client.get("/predict/99999")
     assert response.status_code == 404
-    assert response.json()["detail"] == "SK_ID_CURR not found"
+    assert response.json()["detail"] == "Client SK_ID_CURR not found in the database"
 
 def test_predict_missing_sk_id():
     response = client.get("/predict/")
