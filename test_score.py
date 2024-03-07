@@ -9,7 +9,7 @@ def test_predict_valid_sk_id():
     response = client.get("/predict/100002")
     assert response.status_code == 200
     data = response.json()
-    assert "class" in data
+    assert "prediction" in data
     assert "probability_of_failure" in data
 
 def test_predict_invalid_sk_id():

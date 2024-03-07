@@ -24,7 +24,7 @@ if st.button("Predict"):
         # Display the prediction for the client with SK_ID_CURR
         st.write(f"Prediction for client SK_ID_CURR = {sk_id_curr}:")
         st.write(f"Probability of failure: {prediction_data['probability_of_failure']:.4f}")
-        st.write(f"Class: {prediction_data['class']}")
+        st.write(f"Class: {prediction_data['prediction']}")
 
         # Plot pie chart representing probability of failure
         prob_failure = prediction_data['probability_of_failure']

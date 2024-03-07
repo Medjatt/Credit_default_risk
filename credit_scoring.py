@@ -22,8 +22,14 @@ def predict(sk_id: int = Path(..., title="SK_ID_CURR", description="The unique i
     probability = model.predict_proba(data)[:, 1]
     prediction = model.predict(data)
 
+    # Determine the prediction label
+    if prediction.item() == 1:
+        prediction_label = "credit refused"
+    else:
+        prediction_label = "credit granted"
+
     # Format the output
-    formatted_prediction = {"probability_of_failure": round(probability.item(), 4), "class": prediction.item()}
+    formatted_prediction = {"probability_of_failure": round(probability.item(), 4), "prediction": prediction_label}
 
     return formatted_prediction
 
